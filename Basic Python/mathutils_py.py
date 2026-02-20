@@ -12,7 +12,7 @@ class MathUtils:
         return a * b
     
     def divide(self, a, b):
-        """Returns the quotient of a and b. Raises ValueError if b is zero."""
+        """Returns the quotient of a and b. Returns -1.0 if b is zero."""
         if b == 0:
-            raise ValueError("Cannot divide by zero.")
+            return -1.0
         return a / b

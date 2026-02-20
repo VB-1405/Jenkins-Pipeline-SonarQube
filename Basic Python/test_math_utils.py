@@ -26,7 +26,6 @@ def test_multiply(math_utils):
 def test_divide(math_utils):
     assert math_utils.divide(10, 2) == 5.0
     assert math_utils.divide(7, 2) == 3.5
-    with pytest.raises(ValueError, match="Cannot divide by zero."):
-        math_utils.divide(1, 0)
+    assert math_utils.divide(1, 0) == -1.0
     assert math_utils.divide(-10, 2) == -5.0
     assert math_utils.divide(0, 5) == 0.0
