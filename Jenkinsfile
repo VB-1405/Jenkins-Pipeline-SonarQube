@@ -37,35 +37,29 @@ pipeline {
     post {
         always {
             script {
-                // 1. Report Unit Test results
+                // 1. Report Unit Test results (Works fine)
                 if (fileExists('python-results.xml')) {
                     junit 'python-results.xml'
                 }
                 
-                // 2. Report Code Coverage (using Cobertura for Python)
-                // This requires the Cobertura plugin to be installed in Jenkins
+                // 2. Archive Coverage Report (Since Cobertura plugin is broken)
+                // This makes the coverage.xml available in the Jenkins UI
                 if (fileExists('coverage.xml')) {
-                    cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
+                    archiveArtifacts artifacts: 'coverage.xml', fingerprint: true
                 }
             }
         }
         success {
-            echo 'Build Successful!'
-            // 3. Send Email notification upon success
-            // Requires SMTP configuration in Manage Jenkins -> System
-            // mail to: 'your-email@example.com',
-            //      subject: "SUCCESS: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
-            //      body: "The build was successful. Check results at ${env.BUILD_URL}"
+            echo 'SUCCESS: Build and SonarQube Analysis completed.'
+            // If you have a real email server, uncomment the line below:
+            // mail to: 'your-email@example.com', subject: 'Build Success', body: '...'
         }
         failure {
-            echo 'Build Failed!'
-            // 3. Send Email notification upon failure
-            // mail to: 'your-email@example.com',
-            //      subject: "FAILURE: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
-            //      body: "The build failed. Review the logs at ${env.BUILD_URL}"
+            echo 'FAILURE: The build has failed.'
         }
     }
 }
+
 
 
 
