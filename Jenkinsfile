@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        // Define SonarQube scanner tool name (as configured in Jenkins Global Tool Configuration)
-        SCANNER_HOME = tool 'SonarScanner'
-    }
-
     stages {
         stage('Python: Setup & Test') {
             steps {
@@ -14,7 +9,6 @@ pipeline {
                         python3 -m venv venv
                         . venv/bin/activate
                         pip install pytest pytest-cov
-                        # Run tests with coverage
                         python3 -m pytest --junitxml=../python-results.xml --cov=. --cov-report=xml:../coverage.xml
                     '''
                 }
@@ -23,8 +17,11 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') { // 'SonarQube' is the name of the server in Jenkins config
-                    sh "${env.SCANNER_HOME}/bin/sonar-scanner"
+                script {
+                    def scannerHome = tool 'SonarScanner'
+                    withSonarQubeEnv('MySonarQubeServer') {
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
                 }
             }
         }
@@ -39,17 +36,20 @@ pipeline {
 
     post {
         always {
-            junit 'python-results.xml'
+            // Only run junit if the file exists to avoid further errors
+            script {
+                if (fileExists('python-results.xml')) {
+                    junit 'python-results.xml'
+                }
+            }
         }
         success {
-            echo 'Build Successful! Sending notification...'
-            // Example email notification (requires Mailer plugin)
-            // mail to: 'your-email@example.com', subject: "Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}", body: "Check it out at ${env.BUILD_URL}"
+            echo 'Build Successful!'
         }
         failure {
-            echo 'Build Failed! Sending notification...'
-            // mail to: 'your-email@example.com', subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}", body: "Review the logs at ${env.BUILD_URL}"
+            echo 'Build Failed!'
         }
     }
 }
+
 
