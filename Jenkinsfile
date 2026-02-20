@@ -51,13 +51,13 @@ pipeline {
         }
         success {
             echo 'SUCCESS: Build and SonarQube Analysis completed.'
-            mail to: 'your-email@example.com',
+            mail to: 'vbhavsar1@toromail.csudh.edu',
                  subject: "SUCCESS: Build ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                  body: "The build was successful. Review the artifacts and SonarQube report at ${env.BUILD_URL}"
         }
         failure {
             echo 'FAILURE: The build has failed.'
-            mail to: 'your-email@example.com',
+            mail to: 'vrishabhbhavsar@gmail.com',
                  subject: "FAILURE: Build ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                  body: "The build failed. Please check the logs at ${env.BUILD_URL}"
         }
