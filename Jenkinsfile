@@ -36,20 +36,36 @@ pipeline {
 
     post {
         always {
-            // Only run junit if the file exists to avoid further errors
             script {
+                // 1. Report Unit Test results
                 if (fileExists('python-results.xml')) {
                     junit 'python-results.xml'
+                }
+                
+                // 2. Report Code Coverage (using Cobertura for Python)
+                // This requires the Cobertura plugin to be installed in Jenkins
+                if (fileExists('coverage.xml')) {
+                    cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
                 }
             }
         }
         success {
             echo 'Build Successful!'
+            // 3. Send Email notification upon success
+            // Requires SMTP configuration in Manage Jenkins -> System
+            // mail to: 'your-email@example.com',
+            //      subject: "SUCCESS: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+            //      body: "The build was successful. Check results at ${env.BUILD_URL}"
         }
         failure {
             echo 'Build Failed!'
+            // 3. Send Email notification upon failure
+            // mail to: 'your-email@example.com',
+            //      subject: "FAILURE: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+            //      body: "The build failed. Review the logs at ${env.BUILD_URL}"
         }
     }
 }
+
 
 
