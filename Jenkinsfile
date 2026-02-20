@@ -5,9 +5,12 @@ pipeline {
         stage('Python: Setup & Test') {
             steps {
                 dir('Basic Python') {
-                    // Use python3 -m pip to ensure it's the correct environment
-                    sh 'pip install pytest'
-                    sh 'pytest --junitxml=../python-results.xml'
+                    sh '''
+                        python3 -m venv venv
+                        . venv/bin/activate
+                        pip install pytest
+                        python3 -m pytest --junitxml=../python-results.xml
+                    '''
                 }
             }
         }
